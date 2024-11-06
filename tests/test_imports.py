@@ -32,7 +32,7 @@ def test_adapters_dont_import_each_other() -> None:
     adapter_modules = (
         module.name for module in pkgutil.iter_modules(adapters.__path__)
     )
-    exclude = {"api": []}
+    exclude = {"api": [""]}
     for adapter in adapter_modules:
         rule = (
             archrule(f"adapter_{adapter}")

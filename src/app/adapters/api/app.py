@@ -5,19 +5,17 @@ from aioinject.ext.fastapi import AioInjectMiddleware
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app import telemetry
-from app.adapters.api import books
+from app.adapters.api import cameras
 from app.core.di import create_container
 from app.settings import AppSettings
 from lib.settings import get_settings
 
 _routers: Iterable[APIRouter] = [
-    books.router,
+    cameras.router,
 ]
 
 
 def create_app() -> FastAPI:
-    telemetry.setup_telemetry()
     container = create_container()
 
     @contextlib.asynccontextmanager
@@ -42,6 +40,5 @@ def create_app() -> FastAPI:
     @app.get("/health")
     async def healthcheck() -> None:
         return None
-
 
     return app

@@ -1,5 +1,6 @@
 from lib.dto import BaseDTO
 
 
-class BookCreateDTO(BaseDTO):
+class CameraCreateDTO(BaseDTO):
     title: str
+    url: str

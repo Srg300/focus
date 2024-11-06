@@ -1,6 +1,6 @@
 from collections.abc import Iterable
-from typing import Any, TypeAlias
+from typing import Any
 
 from aioinject import Provider
 
-Providers: TypeAlias = Iterable[Provider[Any]]
+Providers = Iterable[Provider[Any]]

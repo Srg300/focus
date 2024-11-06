@@ -6,12 +6,10 @@ from sqlalchemy import engine_from_config, pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine
 
-from app import telemetry
 from app.db import Base
 from app.settings import DatabaseSettings
 from lib.settings import get_settings
 
-telemetry.setup_telemetry()
 config = context.config
 
 if config.config_file_name is not None:

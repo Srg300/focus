@@ -1,0 +1,2 @@
+class CameraAlreadyExistsError:
+    pass

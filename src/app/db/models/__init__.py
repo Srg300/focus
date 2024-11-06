@@ -1,4 +1,4 @@
 # Import your models here
-from ._book import Book
+from ._camera import Camera
 
-__all__ = ["Book"]
+__all__ = ["Camera"]

@@ -1,10 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Book
+from app.db.models import Camera
 
 
-class BookRepository:
+class CameraRepository:
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
@@ -12,12 +12,12 @@ class BookRepository:
         self,
         id_: int | None = None,
         title: str | None = None,
-    ) -> Book | None:
-        stmt = select(Book)
+    ) -> Camera | None:
+        stmt = select(Camera)
 
         if id_ is not None:
-            stmt = stmt.where(Book.id == id_)
+            stmt = stmt.where(Camera.id == id_)
         if title is not None:
-            stmt = stmt.where(Book.title == title)
+            stmt = stmt.where(Camera.title == title)
 
         return (await self._session.scalars(stmt)).one_or_none()

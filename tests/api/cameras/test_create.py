@@ -4,7 +4,7 @@ from http import HTTPStatus
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.db.models import Book
+from app.db.models import Camera
 
 
 async def test_base_case(
@@ -12,16 +12,19 @@ async def test_base_case(
     session: AsyncSession,
 ) -> None:
     title = str(uuid.uuid4())
-    response = await http_client.post(url="/books", json={"title": title})
+    url = str(uuid.uuid4())
+    response = await http_client.post(url="/cameras", json={"title": title, "url": url})
     assert response.status_code == HTTPStatus.CREATED
     response_json = response.json()
     assert response_json["title"] == title
-    assert await session.get(Book, response_json["id"])
+    assert await session.get(Camera, response_json["id"])
 
 
 async def test_duplicate_title(
     http_client: httpx.AsyncClient,
-    book: Book,
+    camera: Camera,
 ) -> None:
-    response = await http_client.post(url="/books", json={"title": book.title})
+    response = await http_client.post(
+        url="/cameras", json={"title": camera.title, "url": camera.url}
+    )
     assert response.status_code == HTTPStatus.BAD_REQUEST
