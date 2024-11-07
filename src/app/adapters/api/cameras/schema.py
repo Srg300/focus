@@ -16,4 +16,12 @@ class CameraCreateSchema(BaseSchema):
     model_config = ConfigDict(title="CameraCreate")
 
     title: str = pydantic.Field(max_length=255)
-    url: str = pydantic.Field()
+    url: str
+
+
+class CameraGetImageSchema(BaseSchema):
+    url: str
+
+
+class SaveImageSchema(BaseSchema):
+    name: str

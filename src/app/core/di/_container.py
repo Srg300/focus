@@ -6,11 +6,12 @@ from typing import Any
 import aioinject
 from aioinject import Provider
 
-from ._modules import cameras, database
+from ._modules import cameras, database, opencv
 
 modules: Iterable[Iterable[Provider[Any]]] = [
     database.providers,
     cameras.providers,
+    opencv.providers,
 ]
 
 

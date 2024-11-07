@@ -10,8 +10,14 @@ from app.core.domain.cameras.commands import CameraCreateCommand
 from app.core.domain.cameras.dto import CameraCreateDTO
 from app.core.domain.cameras.errors import CameraAlreadyExistsError
 from app.core.domain.cameras.queries import CameraGetQuery
+from lib.opencv.image_capture import ImageCapture
 
-from .schema import CameraCreateSchema, CameraSchema
+from .schema import (
+    CameraCreateSchema,
+    CameraGetImageSchema,
+    CameraSchema,
+    SaveImageSchema,
+)
 
 router = APIRouter(
     tags=["cameras"],
@@ -59,3 +65,19 @@ async def cameras_retrieve(
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
 
     return CameraSchema.model_validate(camera)
+
+
+@router.post(
+    "/save-image",
+    status_code=HTTPStatus.CREATED,
+)
+@inject
+async def save_image(
+    schema: CameraGetImageSchema,
+    command: Annotated[ImageCapture, Inject],
+) -> SaveImageSchema:
+    image = command.execute(url=schema.url)
+
+    if image is None:
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
+    return SaveImageSchema(name=image)

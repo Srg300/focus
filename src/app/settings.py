@@ -21,6 +21,8 @@ class AppSettings(BaseSettings):
     cors_allow_methods: list[Literal["*"] | HTTPMethod] = ["*"]
     cors_allow_headers: list[str] = ["authorization"]
 
+    image_path: str = "images"
+
 
 class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="database_")
@@ -43,3 +45,13 @@ class LoggingSettings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="logging_")
 
     level: LoggingLevel = LoggingLevel.INFO
+
+
+class TelegramBotSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix="tg_")
+
+    name: str
+    url: str
+    token: str
+    time_limit: int = 1
+    rate_limit: int = 30
