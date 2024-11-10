@@ -5,6 +5,7 @@ from aioinject import Inject
 from aioinject.ext.fastapi import inject
 from fastapi import APIRouter, HTTPException
 from result import Err
+from starlette.concurrency import run_in_threadpool
 
 from app.core.domain.cameras.commands import CameraCreateCommand
 from app.core.domain.cameras.dto import CameraCreateDTO
@@ -42,7 +43,7 @@ async def cameras_create(
     )
     if isinstance(camera, Err):
         match camera.err_value:
-            case CameraAlreadyExistsError():  # pragma: no branch
+            case CameraAlreadyExistsError():
                 raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
 
     return CameraSchema.model_validate(camera.ok_value)
@@ -76,7 +77,7 @@ async def save_image(
     schema: CameraGetImageSchema,
     command: Annotated[ImageCapture, Inject],
 ) -> SaveImageSchema:
-    image = command.execute(url=schema.url)
+    image = await run_in_threadpool(command.execute, schema.url)
 
     if image is None:
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
