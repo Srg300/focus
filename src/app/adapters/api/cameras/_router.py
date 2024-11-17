@@ -1,3 +1,4 @@
+import asyncio
 from http import HTTPStatus
 from typing import Annotated
 
@@ -5,7 +6,6 @@ from aioinject import Inject
 from aioinject.ext.fastapi import inject
 from fastapi import APIRouter, HTTPException
 from result import Err
-from starlette.concurrency import run_in_threadpool
 
 from app.core.domain.cameras.commands import CameraCreateCommand
 from app.core.domain.cameras.dto import CameraCreateDTO
@@ -77,8 +77,8 @@ async def save_image(
     schema: CameraGetImageSchema,
     command: Annotated[ImageCapture, Inject],
 ) -> SaveImageSchema:
-    image = await run_in_threadpool(command.execute, schema.url)
+    image = await asyncio.to_thread(command.save_image, schema.url)
 
-    if image is None:
+    if isinstance(image, Err):
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
-    return SaveImageSchema(name=image)
+    return SaveImageSchema(name=image.ok_value)

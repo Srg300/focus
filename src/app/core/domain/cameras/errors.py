@@ -1,2 +1,5 @@
-class CameraAlreadyExistsError:
-    pass
+import dataclasses
+
+
+@dataclasses.dataclass
+class CameraAlreadyExistsError(Exception): ...
