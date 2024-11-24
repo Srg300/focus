@@ -1,4 +1,3 @@
-import asyncio
 from http import HTTPStatus
 from typing import Annotated
 
@@ -7,11 +6,13 @@ from aioinject.ext.fastapi import inject
 from fastapi import APIRouter, HTTPException
 from result import Err
 
-from app.core.domain.cameras.commands import CameraCreateCommand
+from app.core.domain.cameras.commands import (
+    CameraCreateCommand,
+    CameraHttpGetImageCommand,
+)
 from app.core.domain.cameras.dto import CameraCreateDTO
 from app.core.domain.cameras.errors import CameraAlreadyExistsError
 from app.core.domain.cameras.queries import CameraGetQuery
-from lib.opencv.image_capture import ImageCapture
 
 from .schema import (
     CameraCreateSchema,
@@ -75,10 +76,10 @@ async def cameras_retrieve(
 @inject
 async def save_image(
     schema: CameraGetImageSchema,
-    command: Annotated[ImageCapture, Inject],
+    command: Annotated[CameraHttpGetImageCommand, Inject],
 ) -> SaveImageSchema:
-    image = await asyncio.to_thread(command.save_image, schema.url)
-
+    image = await command.execute(url=schema.url)
     if isinstance(image, Err):
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
+
     return SaveImageSchema(name=image.ok_value)
