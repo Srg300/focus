@@ -10,7 +10,7 @@ from lib.settings import get_settings
 
 tg_settings = get_settings(TelegramBotSettings)
 
-TelegramClient = NewType("TelegramClient", httpx.AsyncClient)
+TelegramHttpClient = NewType("TelegramHttpClient", httpx.AsyncClient)
 
 
 class SendData(BaseModel):
@@ -18,24 +18,55 @@ class SendData(BaseModel):
     message: str
 
 
+class FileData(BaseModel):
+    photo: tuple[str, bytes, str]
+
+
+class SendFile(BaseModel):
+    chat_id: int
+    files: FileData
+
+
 @asynccontextmanager
 async def get_http_client(
     settings: TelegramBotSettings,
-) -> AsyncIterator[TelegramClient]:
+) -> AsyncIterator[TelegramHttpClient]:
     async with httpx.AsyncClient(
         base_url=settings.url,
         timeout=10.0,
     ) as client:
-        yield TelegramClient(client)
+        yield TelegramHttpClient(client)
 
 
-async def telegram_send_message(
-    chat_id: int, message: str, client: TelegramClient
-) -> httpx.Response:
-    data = SendData(chat_id=chat_id, message=message)
-    client.headers["Authorization"] = f"Bearer {tg_settings.token}"
-    response = await client.post(
-        f"{tg_settings.url}/sendMessage", json=data.model_dump()
-    )
-    response.raise_for_status()
-    return response
+class TelegramClient:
+    def __init__(
+        self,
+        client: TelegramHttpClient,
+    ) -> None:
+        self._client = client
+
+    async def telegram_send_message(
+        self,
+        chat_id: int,
+        message: str,
+    ) -> httpx.Response:
+        data = SendData(chat_id=chat_id, message=message)
+        self._client.headers["Authorization"] = f"Bearer {tg_settings.token}"
+        response = await self._client.post(
+            f"{tg_settings.url}/sendMessage", json=data.model_dump()
+        )
+        response.raise_for_status()
+        return response
+
+    async def telegram_send_image(
+        self, chat_id: int, image_bytes: bytes, name: str = "image.png"
+    ) -> httpx.Response:
+        data = SendFile(
+            chat_id=chat_id, files=FileData(photo=(name, image_bytes, "image/png"))
+        )
+        self._client.headers["Authorization"] = f"Bearer {tg_settings.token}"
+        response = await self._client.post(
+            f"{tg_settings.url}/sendPhoto", json=data.model_dump()
+        )
+        response.raise_for_status()
+        return response

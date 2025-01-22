@@ -6,7 +6,7 @@ license = { text = "MIT" }
 authors = [
     { name = "Srg300", email = "bocxod500@gmail.com" },
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "aioinject>=0.35.0",
     "alembic>=1.13.3",
@@ -138,6 +138,8 @@ ignore = [
     "EXE",
     "COM812",  # ruff format conflict
     "ISC001",  # ruff format conflict
+    "TD003",
+    "FIX002",
 ]
 
 [tool.ruff.lint.per-file-ignores]

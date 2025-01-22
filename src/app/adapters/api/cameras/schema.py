@@ -1,5 +1,4 @@
-import pydantic
-from pydantic import ConfigDict
+from pydantic import ConfigDict, Field
 
 from app.adapters.api.schema import BaseSchema
 
@@ -15,7 +14,7 @@ class CameraSchema(BaseSchema):
 class CameraCreateSchema(BaseSchema):
     model_config = ConfigDict(title="CameraCreate")
 
-    title: str = pydantic.Field(max_length=255)
+    title: str = Field(max_length=255)
     url: str
 
 
@@ -25,3 +24,11 @@ class CameraGetImageSchema(BaseSchema):
 
 class SaveImageSchema(BaseSchema):
     name: str
+
+
+class RtpsCameraSchema(BaseSchema):
+    login: str = Field(default="")
+    password: str = Field(default="")
+    host: str
+    port: int = Field(gt=0)
+    resource_path: str = Field(default="")

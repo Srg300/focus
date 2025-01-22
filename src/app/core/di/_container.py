@@ -8,6 +8,7 @@ from aioinject import Provider
 
 from app import connectors
 from app.core.validators import HttpUrlCheckValidator
+from app.ports.telegram.client import TelegramClient
 
 from ._modules import cameras, database, opencv
 
@@ -27,5 +28,6 @@ def create_container() -> aioinject.Container:
         container.register(provider)
 
     container.register(aioinject.Scoped(HttpUrlCheckValidator))
+    container.register(aioinject.Scoped(TelegramClient))
 
     return container
