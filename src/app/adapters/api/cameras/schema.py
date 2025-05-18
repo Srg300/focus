@@ -16,6 +16,8 @@ class CameraCreateSchema(BaseSchema):
 
     title: str = Field(max_length=255)
     url: str
+    login: str | None = None
+    password: str | None = None
 
 
 class CameraGetImageSchema(BaseSchema):

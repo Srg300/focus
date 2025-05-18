@@ -1,3 +1,4 @@
+from passlib.context import CryptContext
 from result import Err, Ok, Result
 
 from app.db.models import Camera
@@ -6,6 +7,8 @@ from lib.db import DBContext
 from .dto import CameraCreateDTO
 from .errors import CameraAlreadyExistsError
 from .repositories import CameraRepository
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class CameraService:
@@ -27,6 +30,8 @@ class CameraService:
         camera = Camera(
             title=dto.title,
             url=dto.url,
+            login=dto.login,
+            hashed_password=dto.hashed_password,
         )
         self._db_context.add(camera)
         await self._db_context.flush()

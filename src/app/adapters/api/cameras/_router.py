@@ -44,7 +44,12 @@ async def cameras_create(
     command: Annotated[CameraCreateCommand, Inject],
 ) -> CameraSchema:
     camera = await command.execute(
-        dto=CameraCreateDTO(title=schema.title, url=schema.url)
+        dto=CameraCreateDTO(
+            title=schema.title,
+            url=schema.url,
+            login=schema.login,
+            password=schema.password,
+        )
     )
     if isinstance(camera, Err):
         match camera.err_value:
