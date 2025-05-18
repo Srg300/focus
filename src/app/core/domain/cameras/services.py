@@ -29,9 +29,11 @@ class CameraService:
 
         camera = Camera(
             title=dto.title,
-            url=dto.url,
+            host=dto.host,
             login=dto.login,
-            hashed_password=dto.hashed_password,
+            password=dto.password,
+            path=dto.path,
+            protocol=dto.protocol,
         )
         self._db_context.add(camera)
         await self._db_context.flush()

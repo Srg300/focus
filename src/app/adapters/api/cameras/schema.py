@@ -8,19 +8,20 @@ class CameraSchema(BaseSchema):
 
     id: int
     title: str
-    url: str
 
 
 class CameraCreateSchema(BaseSchema):
     model_config = ConfigDict(title="CameraCreate")
 
     title: str = Field(max_length=255)
-    url: str
+    host: str
+    protocol: str = Field(default="http")
     login: str | None = None
     password: str | None = None
+    path: str | None = None
 
 
-class CameraGetImageSchema(BaseSchema):
+class CameraUrlSchema(BaseSchema):
     url: str
 
 

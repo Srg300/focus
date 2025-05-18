@@ -6,7 +6,9 @@ from app.db.models import Camera
 
 async def test_cameras_db(session: AsyncSession) -> None:
     camera_count = 10
-    session.add_all([Camera(title=f"{i}", url="url") for i in range(camera_count)])
+    session.add_all(
+        [Camera(title=f"{i}", host="url", protocol="http") for i in range(camera_count)]
+    )
     await session.flush()
 
     cameras = (await session.scalars(select(Camera))).all()

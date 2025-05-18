@@ -23,7 +23,7 @@ async def test_base_case(
 ) -> None:
     camera = (
         await camera_service.create(
-            CameraCreateDTO(title=str(uuid.uuid4()), url=str(uuid.uuid4()))
+            CameraCreateDTO(title=str(uuid.uuid4()), host=str(uuid.uuid4()))
         )
     ).unwrap()
 
@@ -32,5 +32,4 @@ async def test_base_case(
     assert response.json() == {
         "id": camera.id,
         "title": camera.title,
-        "url": camera.url,
     }

@@ -1,9 +1,9 @@
 """
-init
+Create camera
 
-Revision ID: a59716d41abb
+Revision ID: 94c738ff697c
 Revises:
-Create Date: 2024-11-06 12:59:10.855023
+Create Date: 2025-05-18 17:17:30.191820
 
 """
 
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 from alembic import op
 
 # revision identifiers, used by Alembic.
-revision = "a59716d41abb"
+revision = "94c738ff697c"
 down_revision: str | None = None
 branch_labels: str | None = None
 depends_on: str | None = None
@@ -23,7 +23,11 @@ def upgrade() -> None:
         "camera",
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("title", sa.String(length=255), nullable=False),
-        sa.Column("url", sa.Text(), nullable=False),
+        sa.Column("protocol", sa.String(length=20), nullable=False),
+        sa.Column("host", sa.String(length=255), nullable=False),
+        sa.Column("login", sa.String(length=255), nullable=True),
+        sa.Column("password", sa.String(length=255), nullable=True),
+        sa.Column("path", sa.String(length=255), nullable=True),
         sa.Column(
             "is_active", sa.Boolean(), server_default=sa.text("true"), nullable=False
         ),

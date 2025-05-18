@@ -17,7 +17,7 @@ async def test_create(
     camera = await camera_service.create(
         dto=CameraCreateDTO(
             title=str(uuid.uuid4()),
-            url=str(uuid.uuid4()),
+            host=str(uuid.uuid4()),
         )
     )
     assert isinstance(camera, Ok)
@@ -29,7 +29,7 @@ async def test_create_duplicate_title(
     camera_service: CameraService,
 ) -> None:
     result = await camera_service.create(
-        dto=CameraCreateDTO(title=camera.title, url=camera.url)
+        dto=CameraCreateDTO(title=camera.title, host=camera.host)
     )
     assert isinstance(result, Err)
     assert isinstance(result.err_value, CameraAlreadyExistsError)

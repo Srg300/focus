@@ -4,6 +4,7 @@ from typing import Annotated
 from aioinject import Inject
 from aioinject.ext.fastapi import inject
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from result import Err
 
 from app.core.domain.cameras.commands import (
@@ -16,11 +17,12 @@ from app.core.domain.cameras.dto import CameraCreateDTO
 from app.core.domain.cameras.errors import CameraAlreadyExistsError
 from app.core.domain.cameras.queries import CameraGetQuery
 from lib.camera_helper import camera_checker
+from lib.image_proccesing.videp_capture import VideoStreamCapture
 
 from .schema import (
     CameraCreateSchema,
-    CameraGetImageSchema,
     CameraSchema,
+    CameraUrlSchema,
     RtpsCameraSchema,
     SaveImageSchema,
 )
@@ -46,9 +48,10 @@ async def cameras_create(
     camera = await command.execute(
         dto=CameraCreateDTO(
             title=schema.title,
-            url=schema.url,
+            host=schema.host,
             login=schema.login,
             password=schema.password,
+            path=schema.path,
         )
     )
     if isinstance(camera, Err):
@@ -84,7 +87,7 @@ async def cameras_retrieve(
 )
 @inject
 async def save_image_from_html(
-    schema: CameraGetImageSchema,
+    schema: CameraUrlSchema,
     command: Annotated[CameraHttpImageCommand, Inject],
 ) -> SaveImageSchema:
     image = await command.execute(url=schema.url)
@@ -123,10 +126,31 @@ async def save_image_from_rtps(
 )
 @inject
 async def base64_from_rtps(
-    schema: CameraGetImageSchema,
+    schema: CameraUrlSchema,
     command: Annotated[CameraRtpsBase64Command, Inject],
 ) -> SaveImageSchema:
     # TODO(Srg300): доработать
     await command.execute(url=schema.url)
 
     return SaveImageSchema(name="Ok")
+
+
+@router.get(
+    "/{camera_id}/stream",
+)
+@inject
+async def video_stream(
+    camera_id: int,
+    command: Annotated[VideoStreamCapture, Inject],
+    camera_query: Annotated[CameraGetQuery, Inject],
+) -> StreamingResponse:
+    camera = await camera_query.execute(camera_id=camera_id)
+    if not camera:
+        raise HTTPException(status_code=HTTPStatus.NOT_FOUND)
+
+    password = camera.password if camera.password else ""
+    url = f"rtsp://{camera.login}:{password}@{camera.host}/cam/realmonitor?channel=1&subtype=0"
+    return StreamingResponse(
+        command.video_stream(url=url),
+        media_type="multipart/x-mixed-replace; boundary=frame",
+    )

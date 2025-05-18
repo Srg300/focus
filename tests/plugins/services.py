@@ -37,7 +37,7 @@ async def camera(camera_service: CameraService) -> Camera:
     camera = await camera_service.create(
         dto=CameraCreateDTO(
             title=str(uuid.uuid4()),
-            url=str(uuid.uuid4()),
+            host=str(uuid.uuid4()),
         )
     )
     return camera.unwrap()

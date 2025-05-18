@@ -12,8 +12,10 @@ async def test_base_case(
     session: AsyncSession,
 ) -> None:
     title = str(uuid.uuid4())
-    url = str(uuid.uuid4())
-    response = await http_client.post(url="/cameras", json={"title": title, "url": url})
+    host = str(uuid.uuid4())
+    response = await http_client.post(
+        url="/cameras", json={"title": title, "host": host}
+    )
     assert response.status_code == HTTPStatus.CREATED
     response_json = response.json()
     assert response_json["title"] == title
@@ -25,6 +27,6 @@ async def test_duplicate_title(
     camera: Camera,
 ) -> None:
     response = await http_client.post(
-        url="/cameras", json={"title": camera.title, "url": camera.url}
+        url="/cameras", json={"title": camera.title, "host": camera.host}
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
