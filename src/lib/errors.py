@@ -2,7 +2,7 @@ import dataclasses
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
-class CameraAvailableError:
+class CameraNotAvailableError:
     message: str = "Camera is not available"
 
 
