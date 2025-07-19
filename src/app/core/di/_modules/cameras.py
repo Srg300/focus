@@ -1,4 +1,4 @@
-import aioinject
+from dishka import Provider, Scope, provide
 
 from app.core.domain.cameras.commands import (
     CameraCreateCommand,
@@ -9,14 +9,15 @@ from app.core.domain.cameras.commands import (
 from app.core.domain.cameras.queries import CameraGetQuery
 from app.core.domain.cameras.repositories import CameraRepository
 from app.core.domain.cameras.services import CameraService
-from lib.types import Providers
 
-providers: Providers = [
-    aioinject.Scoped(CameraRepository),
-    aioinject.Scoped(CameraService),
-    aioinject.Scoped(CameraGetQuery),
-    aioinject.Scoped(CameraCreateCommand),
-    aioinject.Scoped(CameraHttpImageCommand),
-    aioinject.Scoped(CameraRtpsImageCommand),
-    aioinject.Scoped(CameraRtpsBase64Command),
-]
+
+class CamerasProvider(Provider):
+    scope = Scope.REQUEST
+
+    camera_repo = provide(CameraRepository, scope=Scope.REQUEST)
+    camera_service = provide(CameraService, scope=Scope.REQUEST)
+    camera_get_query = provide(CameraGetQuery, scope=Scope.REQUEST)
+    camera_create_cmd = provide(CameraCreateCommand, scope=Scope.REQUEST)
+    camera_http_cmd = provide(CameraHttpImageCommand, scope=Scope.REQUEST)
+    camera_rtps_cmd = provide(CameraRtpsImageCommand, scope=Scope.REQUEST)
+    camera_base64_cmd = provide(CameraRtpsBase64Command, scope=Scope.REQUEST)

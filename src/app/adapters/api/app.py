@@ -1,7 +1,7 @@
 import contextlib
 from collections.abc import AsyncIterator, Iterable
 
-from aioinject.ext.fastapi import AioInjectMiddleware
+from dishka.integrations.fastapi import setup_dishka
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -20,11 +20,11 @@ def create_app() -> FastAPI:
 
     @contextlib.asynccontextmanager
     async def lifespan(_: FastAPI) -> AsyncIterator[None]:
-        async with container:
-            yield
+        yield
+        await container.close()
 
     app = FastAPI(lifespan=lifespan)
-    app.add_middleware(AioInjectMiddleware, container=container)
+    setup_dishka(container, app)
 
     app_settings = get_settings(AppSettings)
     app.add_middleware(

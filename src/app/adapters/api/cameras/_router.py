@@ -1,8 +1,6 @@
 from http import HTTPStatus
-from typing import Annotated
 
-from aioinject import Inject
-from aioinject.ext.fastapi import inject
+from dishka.integrations.fastapi import DishkaRoute, FromDishka, inject
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from result import Err
@@ -27,10 +25,7 @@ from .schema import (
     SaveImageSchema,
 )
 
-router = APIRouter(
-    tags=["cameras"],
-    prefix="/cameras",
-)
+router = APIRouter(tags=["cameras"], prefix="/cameras", route_class=DishkaRoute)
 
 
 @router.post(
@@ -43,7 +38,7 @@ router = APIRouter(
 @inject
 async def cameras_create(
     schema: CameraCreateSchema,
-    command: Annotated[CameraCreateCommand, Inject],
+    command: FromDishka[CameraCreateCommand],
 ) -> CameraSchema:
     camera = await command.execute(
         dto=CameraCreateDTO(
@@ -72,7 +67,7 @@ async def cameras_create(
 @inject
 async def cameras_retrieve(
     camera_id: int,
-    camera_query: Annotated[CameraGetQuery, Inject],
+    camera_query: FromDishka[CameraGetQuery],
 ) -> CameraSchema:
     camera = await camera_query.execute(camera_id=camera_id)
     if not camera:
@@ -88,7 +83,7 @@ async def cameras_retrieve(
 @inject
 async def save_image_from_html(
     schema: CameraUrlSchema,
-    command: Annotated[CameraHttpImageCommand, Inject],
+    command: FromDishka[CameraHttpImageCommand],
 ) -> SaveImageSchema:
     image = await command.execute(url=schema.url)
     if isinstance(image, Err):
@@ -104,7 +99,7 @@ async def save_image_from_html(
 @inject
 async def save_image_from_rtps(
     schema: RtpsCameraSchema,
-    command: Annotated[CameraRtpsImageCommand, Inject],
+    command: FromDishka[CameraRtpsImageCommand],
 ) -> SaveImageSchema:
     available = await camera_checker(host=schema.host, port=schema.port)
 
@@ -127,7 +122,7 @@ async def save_image_from_rtps(
 @inject
 async def base64_from_rtps(
     schema: CameraUrlSchema,
-    command: Annotated[CameraRtpsBase64Command, Inject],
+    command: FromDishka[CameraRtpsBase64Command],
 ) -> SaveImageSchema:
     # TODO(Srg300): доработать
     await command.execute(url=schema.url)
@@ -141,8 +136,8 @@ async def base64_from_rtps(
 @inject
 async def video_stream(
     camera_id: int,
-    command: Annotated[VideoStreamCapture, Inject],
-    camera_query: Annotated[CameraGetQuery, Inject],
+    command: FromDishka[VideoStreamCapture],
+    camera_query: FromDishka[CameraGetQuery],
 ) -> StreamingResponse:
     camera = await camera_query.execute(camera_id=camera_id)
     if not camera:

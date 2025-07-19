@@ -1,33 +1,56 @@
-import functools
-import itertools
-from collections.abc import Iterable
-from typing import Any
+from collections.abc import AsyncIterator
+from functools import lru_cache
 
-import aioinject
-from aioinject import Provider
+from dishka import (
+    AsyncContainer,
+    Provider,
+    Scope,
+    make_async_container,
+    provide,
+)
 
-from app import connectors
+from app.connectors.httpx_client import HttpxClient, get_http_client
 from app.core.validators import HttpUrlCheckValidator
-from app.ports.telegram.client import TelegramClient
+from app.ports.telegram.client import TelegramClient, TelegramHttpClient
 
-from ._modules import cameras, database, opencv
-
-modules: Iterable[Iterable[Provider[Any]]] = [
-    database.providers,
-    cameras.providers,
-    opencv.providers,
-    connectors.providers,
-]
+from ._modules.cameras import CamerasProvider
+from ._modules.database import DatabaseProvider
+from ._modules.opencv import OpenCvProvider
 
 
-@functools.cache
-def create_container() -> aioinject.Container:
-    container = aioinject.Container()
+class HttpxClientProvider(Provider):
+    @provide(scope=Scope.REQUEST)
+    async def httpx_client(self) -> AsyncIterator[HttpxClient]:
+        async with get_http_client() as client:
+            yield client
 
-    for provider in itertools.chain.from_iterable(modules):
-        container.register(provider)
+    @provide(scope=Scope.REQUEST)
+    async def telegram_http_client(
+        self, http_client: HttpxClient
+    ) -> AsyncIterator[TelegramHttpClient]:
+        yield TelegramHttpClient(http_client)
 
-    container.register(aioinject.Scoped(HttpUrlCheckValidator))
-    container.register(aioinject.Scoped(TelegramClient))
 
-    return container
+class TelegramClientProvider(Provider):
+    scope = Scope.REQUEST  # или Scope.APP, если клиент должен быть singleton
+
+    @provide
+    def telegram_client(self, client: TelegramHttpClient) -> TelegramClient:
+        return TelegramClient(client)
+
+
+class ValidatorsProvider(Provider):
+    scope = Scope.REQUEST
+    url_validator = provide(HttpUrlCheckValidator)
+
+
+@lru_cache
+def create_container() -> AsyncContainer:
+    return make_async_container(
+        DatabaseProvider(),
+        CamerasProvider(),
+        OpenCvProvider(),
+        ValidatorsProvider(),
+        HttpxClientProvider(),
+        TelegramClientProvider(),
+    )

@@ -1,36 +1,28 @@
-from __future__ import annotations
-
-import contextlib
 from collections.abc import AsyncIterator
 
-import aioinject
+from dishka import Provider, Scope, provide
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
-from app.db import async_session_factory, engine
+from app.db import async_session_factory
+from app.db import engine as app_engine
 from lib.db import DBContext
-from lib.types import Providers
 
 
-@contextlib.asynccontextmanager
-async def create_engine() -> AsyncIterator[AsyncEngine]:
-    try:
-        yield engine
-    finally:
-        await engine.dispose()
+class DatabaseProvider(Provider):
+    scope = Scope.APP
 
+    @provide
+    async def engine(self) -> AsyncIterator[AsyncEngine]:
+        try:
+            yield app_engine
+        finally:
+            await app_engine.dispose()
 
-@contextlib.asynccontextmanager
-async def create_session(_: AsyncEngine) -> AsyncIterator[AsyncSession]:
-    async with async_session_factory.begin() as session:
-        yield session
+    @provide(scope=Scope.REQUEST)
+    async def session(self, _: AsyncEngine) -> AsyncIterator[AsyncSession]:
+        async with async_session_factory.begin() as session:
+            yield session
 
-
-async def db_context(session: AsyncSession) -> DBContext:
-    return session
-
-
-providers: Providers = [
-    aioinject.Singleton(create_engine),
-    aioinject.Scoped(create_session),
-    aioinject.Scoped(db_context),
-]
+    @provide(scope=Scope.REQUEST)
+    def db_context(self, session: AsyncSession) -> DBContext:
+        return session

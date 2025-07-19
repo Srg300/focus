@@ -9,6 +9,17 @@ from lib.settings import get_settings
 app_settings = get_settings(AppSettings)
 
 
+class VideoCaptureWrapper:
+    def __init__(self, source: int | str = 0) -> None:
+        self._cap = cv2.VideoCapture(source)
+
+    def __enter__(self) -> cv2.VideoCapture:
+        return self._cap
+
+    def __exit__(self, *args: object) -> None:
+        self._cap.release()
+
+
 class VideoStreamCapture:
     async def video_stream(self, url: str) -> AsyncGenerator[bytes, None]:
         cv_capture = cv2.VideoCapture()

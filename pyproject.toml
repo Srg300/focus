@@ -13,7 +13,7 @@ dependencies = [
     "asyncpg>=0.30.0",
     "fastapi>=0.115.4",
     "orjson>=3.10.10",
-    "pydantic>=2.9.2",
+    "pydantic[mypy]>=2.9.2",
     "pydantic-settings>=2.6.0",
     "python-dotenv>=1.0.1",
     "result>=0.17.0",
@@ -27,6 +27,7 @@ dependencies = [
     "passlib>=1.7.4",
     "types-passlib>=1.7.7.20240106",
     "bcrypt>=4.3.0",
+    "dishka>=1.6.0",
 ]
 
 [project.optional-dependencies]

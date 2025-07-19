@@ -1,5 +1,3 @@
-from collections.abc import AsyncIterator
-from contextlib import asynccontextmanager
 from typing import NewType
 
 import httpx
@@ -25,17 +23,6 @@ class FileData(BaseModel):
 class SendFile(BaseModel):
     chat_id: int
     files: FileData
-
-
-@asynccontextmanager
-async def get_http_client(
-    settings: TelegramBotSettings,
-) -> AsyncIterator[TelegramHttpClient]:
-    async with httpx.AsyncClient(
-        base_url=settings.url,
-        timeout=10.0,
-    ) as client:
-        yield TelegramHttpClient(client)
 
 
 class TelegramClient:
