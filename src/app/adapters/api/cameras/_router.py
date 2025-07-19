@@ -17,7 +17,7 @@ from app.core.domain.cameras.dto import CameraCreateDTO
 from app.core.domain.cameras.errors import CameraAlreadyExistsError
 from app.core.domain.cameras.queries import CameraGetQuery
 from lib.camera_helper import camera_checker
-from lib.image_proccesing.videp_capture import VideoStreamCapture
+from lib.image_proccesing.video_capture import VideoStreamCapture
 
 from .schema import (
     CameraCreateSchema,

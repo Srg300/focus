@@ -28,6 +28,6 @@ class VideoStreamCapture:
                     b"--frame\r\n"
                     b"Content-Type: image/jpeg\r\n\r\n" + frame_bytes + b"\r\n"
                 )
-                await asyncio.sleep(0.001)
+                await asyncio.sleep(0.01)
         finally:
             cv_capture.release()
