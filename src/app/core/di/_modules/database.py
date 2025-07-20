@@ -24,5 +24,5 @@ class DatabaseProvider(Provider):
             yield session
 
     @provide(scope=Scope.REQUEST)
-    def db_context(self, session: AsyncSession) -> DBContext:
+    async def db_context(self, session: AsyncSession) -> DBContext:
         return session
