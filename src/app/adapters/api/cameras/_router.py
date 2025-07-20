@@ -106,6 +106,11 @@ async def save_image_from_rtps(
     schema: RtpsCameraSchema,
     command: Annotated[CameraRtpsImageCommand, Inject],
 ) -> SaveImageSchema:
+    if not schema.host or schema.port:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail="Required host or port"
+        )
+
     available = await camera_checker(host=schema.host, port=schema.port)
 
     if isinstance(available, Err):
