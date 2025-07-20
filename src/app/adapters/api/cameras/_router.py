@@ -90,6 +90,11 @@ async def save_image_from_html(
     schema: CameraUrlSchema,
     command: Annotated[CameraHttpImageCommand, Inject],
 ) -> SaveImageSchema:
+    if not schema.url:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST, detail="Required url"
+        )
+
     image = await command.execute(url=schema.url)
     if isinstance(image, Err):
         raise HTTPException(status_code=HTTPStatus.BAD_REQUEST)
