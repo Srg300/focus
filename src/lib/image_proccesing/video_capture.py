@@ -10,11 +10,8 @@ from lib.settings import get_settings
 app_settings = get_settings(AppSettings)
 
 
-
 class Camera:
-
     def __init__(self) -> None:
-
         self.cap = cv2.VideoCapture()
         self.lock = threading.Lock()
 
@@ -36,7 +33,6 @@ class Camera:
             return jpeg.tobytes()
 
     def release(self) -> None:
-
         with self.lock:
             if self.cap.isOpened():
                 self.cap.release()
@@ -50,8 +46,9 @@ class VideoStreamCapture:
         while True:
             frame = self.camera.get_frame(url=url)
             if frame:
-                yield (b"--frame\r\n"
-                    b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
+                yield (
+                    b"--frame\r\n" b"Content-Type: image/jpeg\r\n\r\n" + frame + b"\r\n"
+                )
             else:
                 break
             await asyncio.sleep(0)

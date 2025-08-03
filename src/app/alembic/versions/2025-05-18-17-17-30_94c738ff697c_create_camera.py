@@ -1,5 +1,5 @@
 """
-Create camera
+Create camera.
 
 Revision ID: 94c738ff697c
 Revises:

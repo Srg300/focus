@@ -71,7 +71,7 @@ class CameraRtpsBase64Command:
         self._tg_client = tg_client
 
     async def execute(self, url: str) -> None:
-        # TODO(srg300): доработать. добавить обработку ошибок ТГ.
+        # доработать. добавить обработку ошибок ТГ.
         image_bytes = await asyncio.to_thread(self._image_capture.get_image_bytes, url)
         if isinstance(image_bytes, Ok):
             await self._tg_client.telegram_send_image(

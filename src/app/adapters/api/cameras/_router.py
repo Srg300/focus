@@ -91,9 +91,7 @@ async def save_image_from_html(
     command: Annotated[CameraHttpImageCommand, Inject],
 ) -> SaveImageSchema:
     if not schema.url:
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST, detail="Required url"
-        )
+        raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Required url")
 
     image = await command.execute(url=schema.url)
     if isinstance(image, Err):
@@ -139,7 +137,7 @@ async def base64_from_rtps(
     schema: CameraUrlSchema,
     command: Annotated[CameraRtpsBase64Command, Inject],
 ) -> SaveImageSchema:
-    # TODO(Srg300): доработать
+    # Позже добавить обработку ошибок
     await command.execute(url=schema.url)
 
     return SaveImageSchema(name="Ok")
