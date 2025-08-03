@@ -2,11 +2,12 @@ import aioinject
 from cv2 import VideoCapture
 
 from lib.image_proccesing.image_capture import ImageCapture
-from lib.image_proccesing.video_capture import VideoStreamCapture
+from lib.image_proccesing.video_capture import Camera, VideoStreamCapture
 from lib.types import Providers
 
 providers: Providers = [
     aioinject.Scoped(ImageCapture),
     aioinject.Scoped(VideoCapture),
     aioinject.Scoped(VideoStreamCapture),
+    aioinject.Scoped(Camera),
 ]

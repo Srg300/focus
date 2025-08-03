@@ -1,7 +1,7 @@
 import pkgutil
+import typing
 from collections.abc import AsyncIterator
 from datetime import datetime
-from typing import cast
 
 import dotenv
 import httpx
@@ -66,4 +66,4 @@ def now() -> datetime:
 
 @pytest.fixture(params=[0, 1, 10])
 def collection_size(request: SubRequest) -> int:
-    return cast(int, request.param)
+    return typing.cast("int", request.param)

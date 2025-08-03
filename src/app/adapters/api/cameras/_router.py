@@ -161,6 +161,6 @@ async def video_stream(
     password = camera.password if camera.password else ""
     url = f"rtsp://{camera.login}:{password}@{camera.host}/cam/realmonitor?channel=1&subtype=0"
     return StreamingResponse(
-        command.video_stream(url=url),
+        command.video_stream_(url=url),
         media_type="multipart/x-mixed-replace; boundary=frame",
     )
